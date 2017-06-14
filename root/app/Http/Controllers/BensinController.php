@@ -22,6 +22,26 @@ class BensinController extends Controller
         $b['total'] = $r['total'];
         $b['keterangan'] = $r['keterangan'];
         $b->save();
-        return redirect()->route('penjualan_bensin');
+        return redirect()->route('pbensin');
+    }
+    public function edit($id){
+        $title = 'Penjualan Bensin';
+        $b = Bensin::join('k_bensin','p_bensin.id_jenis','k_bensin.id')->whereId($id)->first();
+        return view('penjualan.editbensin',compact('b','title'));
+    }
+    public function update(Request $r, $id){
+        $b = Bensin::find($id);
+        $b['id_jenis'] = $r['jenis'];
+        $b['jumlah'] = $r['jumlah'];
+        $b['total'] = $r['total'];
+        $b['keterangan'] = $r['keterangan'];
+        $b->save();
+        return redirect()->route('pbensin');
+    }
+    public function hapus($id){
+        $b = Bensin::find($id);
+        $b->delete();
+        session()->flash('success','Data berhasil dihapus.');
+        return redirect()->route('pbensin');
     }
 }

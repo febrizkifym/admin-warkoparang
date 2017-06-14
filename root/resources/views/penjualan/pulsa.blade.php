@@ -1,7 +1,7 @@
 @extends('layouts.template')
 @section('content')
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
         <div class="panel">
             <div class="panel-heading">
                 <h3 class="panel-title">Tambah Record</h3>
@@ -11,31 +11,42 @@
                 </div>
             </div>
             <div class="panel-body">
-                <form action="{{url('/penjualan/bensin')}}" method="POST">
+                <form action="{{url('/penjualan/pulsa')}}" method="POST">
                    {!! csrf_field() !!}
-                    <div class="form-group">
-                       <label for="jenis">Jenis</label>
-                        <select name="jenis" id="jenis" class="form-control">
-                            <option value="1" selected>Bensin</option>
-                            <option value="2">Pertalite</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                        <label for="">Harga</label>
                         <div class="input-group">
                             <span class="input-group-addon">Rp.</span>
-                            <input class="form-control" type="text" id="harga" name="harga" readonly>
+                            <input class="form-control" type="text" id="harga" name="harga" value="6000" readonly>
                         </div>
                     </div>
                     <div class="form-group">
                        <label for="">Jumlah</label>
-                        <input name="jumlah" id="jumlah" type="number" class="form-control" min="0" value="0" required>
+                        <select name="jumlah" id="jumlah" class="form-control">
+                            <option value="5000">5000</option>
+                            <option value="10000">10000</option>
+                            <option value="20000">20000</option>
+                        </select>
                     </div>
                     <div class="form-group">
                        <label for="">Total</label>
                         <div class="input-group">
                             <span class="input-group-addon">Rp.</span>
                             <input class="form-control" type="text" id="total" name="total" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                       <label for="">Tunai</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">Rp.</span>
+                            <input class="form-control" type="text" id="tunai" name="tunai" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                       <label for="">Kembalian</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">Rp.</span>
+                            <input class="form-control" type="text" name="kembalian" id="kembalian" readonly>
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,31 +63,30 @@
                     </div>
                 </form>
                 <script>
-                    var jenis = $('#jenis'),
-                        harga = $('#harga'),
+                    var harga = $('#harga'),
                         jumlah = $('#jumlah'),
-                        total = $('#total');
-                    harga.val('8000');
-                    total.val('0');
-                    jenis.change(function(){
-                        if(jenis.val() == 1){
-                            harga.val('8000');
-                        }else{
-                            harga.val('9000');
-                        }
-                        total.val(harga.val()*jumlah.val());
-                    });
+                        total = $('#total'),
+                        tunai = $('#tunai'),
+                        kembalian = $('#kembalian');
+                    function hitung(){
+                        var j = jumlah.val()/5000;
+                        return j*6000;
+                    }
+                    total.val(hitung());
+                    tunai.keyup(function(){
+                        kembalian.val(tunai.val()-total.val());
+                    })
                     jumlah.keyup(function(){
-                        total.val(harga.val()*jumlah.val());
+                        total.val(hitung());
                     })
                     jumlah.change(function(){
-                        total.val(harga.val()*jumlah.val());
+                        total.val(hitung());
                     })
                 </script>
             </div>
         </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div class="panel">
             <div class="panel-heading">
                 <h3 class="panel-title">Log Penjualan</h3>
@@ -90,35 +100,45 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Jenis</th>
                             <th>Jumlah</th>
                             <th>Total</th>
+                            <th>Tunai</th>
+                            <th>Kembalian</th>
                             <th>Waktu &amp; Tanggal</th>
                             <th>Keterangan</th>
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php $no=1 ?>
-                    @foreach($bensin as $b)
+                    @foreach($pulsa as $p)
                         <tr>
                             <td><a href="#">{{$no}}</a></td>
-                            <td>{{$b['jenis']}}</td>
-                            <td>{{$b['jumlah']}}</td>
-                            <td>Rp. {{$b['total']}}</td>
-                            <td>{{ Carbon\Carbon::parse($b->created_at)->format('d-m-Y H:i') }}</td>
-                            <td>{{$b['keterangan']}}</td>
+                            <td>Pulsa Rp.{{$p['jumlah']}}</td>
+                            <td>Rp. {{$p['total']}}</td>
+                            <td>Rp. {{$p['tunai']}}</td>
+                            <td>Rp. {{$p['tunai']-$p['total']}}</td>
+                            <td>{{ Carbon\Carbon::parse($p->created_at)->format('d-m-Y H:i') }}</td>
+                            <td>{{$p['keterangan']}}</td>
                             <td>
-                                <a href="{{route('edit_pbensin',$b['id_penjualan'])}}"><button class="btn btn-info btn-xs"><i class="fa fa-pencil"></i></button></a>
-                                <a href="{{route('hapus_pbensin',$b['id_penjualan'])}}"><button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></a>
+                                @if(($p['tunai']-$p['total'])>0)
+                                <span class="label label-success">LUNAS</span>
+                                @else
+                                <span class="label label-warning">BELUM LUNAS</span>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{route('edit_ppulsa',$p['id_penjualan'])}}"><button class="btn btn-info btn-xs"><i class="fa fa-pencil"></i></button></a>
+                                <a href="{{route('hapus_ppulsa',$p['id_penjualan'])}}"><button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></a>
                             </td>
                         </tr>
                     <?php $no++ ?>
                     @endforeach
                     </tbody>
                     <tr>
-                        <th colspan="3">Total</th>
-                        <th colspan="">Rp. {{App\Bensin::sum('total')}}</th>
+                        <th colspan="2">Total</th>
+                        <th colspan="">Rp. {{App\Pulsa::sum('total')}}</th>
                        <th></th>
                        <th></th>
                        <th></th>

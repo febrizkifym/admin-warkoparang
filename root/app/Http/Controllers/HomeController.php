@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\JenisKonsumsi;
 
 class HomeController extends Controller
 {
@@ -25,5 +26,24 @@ class HomeController extends Controller
     {
         $title = 'Dashboard';
         return view('dashboard',compact('title'));
+    }
+    public function config()
+    {
+        $title = 'Pengaturan';
+        return view('pengaturan',compact('title'));
+    }
+    public function tambah_menu(Request $r)
+    {
+        $m = new JenisKonsumsi;
+        $m['jenis'] = $r['jenis'];
+        $m['nama'] = $r['nama'];
+        $m['harga'] = $r['harga'];
+        $m->save();
+        return redirect('/pengaturan');
+    }
+    public function hapus_menu($id)
+    {
+        JenisKonsumsi::whereId($id)->delete();
+        return redirect('/pengaturan');
     }
 }

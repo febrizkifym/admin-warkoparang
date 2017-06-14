@@ -1,6 +1,14 @@
 @extends('layouts.template')
 
 @section('content')
+<?php
+$pbensin = App\Bensin::whereRaw('Date(created_at) = CURDATE()');
+$ppulsa = App\Pulsa::whereRaw('Date(created_at) = CURDATE()');
+$pkonsumsi = App\Konsumsi::whereRaw('Date(created_at) = CURDATE()');
+$ptotal = $pbensin->count()+$ppulsa->count()+$pkonsumsi->count();
+
+$income = $pbensin->sum('total')+$ppulsa->sum('total')+$pkonsumsi->sum('total');
+?>
 <div class="panel panel-headline">
     <div class="panel-heading">
         <h3 class="panel-title">Penjualan Hari Ini</h3>
@@ -9,28 +17,28 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="metric">
-                    <a href="#bensinModal" data-toggle="modal" data-target="#bensinModal"><span class="icon"><i class="fa fa-plus"></i></span></a>
+                    <a href="{{route('pbensin')}}"><span class="icon"><i class="fa fa-plus"></i></span></a>
                     <p>
-                        <span class="number">{{ App\Bensin::whereRaw('Date(created_at) = CURDATE()')->count() }}</span>
+                        <span class="number">{{ $pbensin->count() }}</span>
                         <span class="title">Penjualan Bensin</span>
                     </p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="metric">
-                    <a href=""><span class="icon"><i class="fa fa-plus"></i></span></a>
+                    <a href="{{route('ppulsa')}}"><span class="icon"><i class="fa fa-plus"></i></span></a>
                     <p>
-                        <span class="number">0</span>
+                        <span class="number">{{ $ppulsa->count() }}</span>
                         <span class="title">Penjualan Pulsa</span>
                     </p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="metric">
-                    <a href=""><span class="icon"><i class="fa fa-plus"></i></span></a>
+                    <a href="{{route('pkonsumsi')}}"><span class="icon"><i class="fa fa-plus"></i></span></a>
                     <p>
-                        <span class="number">0</span>
-                        <span class="title">Penjualan Nasi</span>
+                        <span class="number">{{ $pkonsumsi->count() }}</span>
+                        <span class="title">Penjualan Konsumsi</span>
                     </p>
                 </div>
             </div>
@@ -41,91 +49,17 @@
             </div>
             <div class="col-md-3">
                 <div class="weekly-summary text-right">
-                    <span class="number">0</span> <span class="percentage"></span>
+                    <span class="number">{{ $ptotal }}</span> <span class="percentage"></span>
                     <span class="info-label">Total Penjualan</span>
                 </div>
                 <div class="weekly-summary text-right">
-                    <span class="number">Rp.0</span> <span class="percentage"></span>
+                    <span class="number">Rp. {{ $income }}</span> <span class="percentage"></span>
                     <span class="info-label">Penjualan Hari Ini</span>
                 </div>
                 <div class="weekly-summary text-right">
-                    <span class="number">Rp.0</span> <span class="percentage"></span>
-                    <span class="info-label">Total Pemasukan</span>
+                    <span class="number">Rp. {{ $outcome or '0' }}</span> <span class="percentage"></span>
+                    <span class="info-label">Pengeluaran Hari Ini</span>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal -->
-<div id="bensinModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Penjualan Bensin</h4>
-            </div>
-            <div class="modal-body">
-                <form action="{{url('/penjualan/bensin')}}" method="POST">
-                   {!! csrf_field() !!}
-                    <div class="form-group">
-                       <label for="jenis">Jenis</label>
-                        <select name="jenis" id="jenis" class="form-control">
-                            <option value="1" selected>Bensin</option>
-                            <option value="2">Pertalite</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                       <label for="">Harga</label>
-                        <div class="input-group">
-                            <span class="input-group-addon">Rp.</span>
-                            <input class="form-control" type="text" id="harga" name="harga" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                       <label for="">Jumlah</label>
-                        <input name="jumlah" id="jumlah" type="number" class="form-control" min="0" value="0" required>
-                    </div>
-                    <div class="form-group">
-                       <label for="">Total</label>
-                        <div class="input-group">
-                            <span class="input-group-addon">Rp.</span>
-                            <input class="form-control" type="text" id="total" name="total" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                       <label for="">Keterangan</label>
-                        <input name="keterangan" type="text" class="form-control" min="0" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                        </div>
-                    </div>
-                <script>
-                    var jenis = $('#jenis'),
-                        harga = $('#harga'),
-                        jumlah = $('#jumlah'),
-                        total = $('#total');
-                    harga.val('8000');
-                    total.val('0');
-                    jenis.change(function(){
-                        if(jenis.val() == 1){
-                            harga.val('8000');
-                        }else{
-                            harga.val('9000');
-                        }
-                    });
-                    jumlah.keyup(function(){
-                        total.val(harga.val()*jumlah.val());
-                    })
-                    jumlah.change(function(){
-                        total.val(harga.val()*jumlah.val());
-                    })
-                </script>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Input</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </form>
             </div>
         </div>
     </div>

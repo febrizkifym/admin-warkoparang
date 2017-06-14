@@ -63,21 +63,11 @@
 				<nav>
 					<ul class="nav">
 						<li><a href="{{route('dashboard')}}" {{$title=='Dashboard'?'class=active':null}}><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
-						<li><a href="{{route('penjualan_bensin')}}" {{$title=='Penjualan Bensin'?'class=active':null}}><i class="lnr lnr-funnel"></i> <span>Penjualan Bensin</span></a></li>
-						<li><a href="{{route('dashboard')}}"><i class="lnr lnr-smartphone"></i> <span>Penjualan Pulsa</span></a></li>
-						<li><a href="{{route('dashboard')}}"><i class="lnr lnr-coffee-cup"></i> <span>Penjualan Kopi</span></a></li>
-						<li><a href="{{route('dashboard')}}"><i class="lnr lnr-dinner"></i> <span>Penjualan Nasi</span></a></li>
-						<li>
-							<a href="#subPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-cog"></i> <span>Konfigurasi</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-							<div id="subPages" class="collapse ">
-								<ul class="nav">
-									<li><a href="#" class="">Bensin</a></li>
-									<li><a href="#" class="">Pulsa</a></li>
-									<li><a href="#" class="">Kopi</a></li>
-									<li><a href="#" class="">Nasi</a></li>
-								</ul>
-							</div>
-						</li>
+						<li><a href="{{route('pkonsumsi')}}" {{$title=='Penjualan Konsumsi'?'class=active':null}}><i class="lnr lnr-dinner"></i> <span>Penjualan Konsumsi</span></a></li>
+						<li><a href="{{route('pbensin')}}" {{$title=='Penjualan Bensin'?'class=active':null}}><i class="lnr lnr-funnel"></i> <span>Penjualan Bensin</span></a></li>
+						<li><a href="{{route('ppulsa')}}" {{$title=='Penjualan Pulsa'?'class=active':null}}><i class="lnr lnr-smartphone"></i> <span>Penjualan Pulsa</span></a></li>
+						<li><a href="{{route('pengeluaran')}}" {{$title=='Pengeluaran'?'class=active':null}}><i class="lnr lnr-exit-up"></i> <span>Pengeluaran</span></a></li>
+						<li><a href="{{route('pengaturan')}}" {{$title=='Pengaturan'?'class=active':null}}><i class="lnr lnr-cog"></i> <span>Pengaturan</span></a></li>
 					</ul>
 				</nav>
 			</div>
